@@ -1,14 +1,17 @@
 import java.io.*;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 
-class Transactions {
+import static java.lang.System.exit;
+
+class Parser {
 
     private final File f;
     private java.io.Reader inputStream;
     private BufferedReader inputReader;
 
-
     // Initialize
-    Transactions(File f)
+    Parser(File f)
     {
         this.f = f;
         reset_input_stream();
@@ -28,7 +31,7 @@ class Transactions {
 
     }
 
-    Transaction get_next_transaction()
+    String get_next_line()
     {
         String line = null;
         try {
@@ -44,7 +47,8 @@ class Transactions {
             reset_input_stream();
             return null;
         }
-        return new Transaction(line);
+
+        return line;
 
     }
 }

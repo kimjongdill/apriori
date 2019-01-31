@@ -1,6 +1,6 @@
 import java.util.Comparator;
 
-public class Item {
+public class Item implements Comparable<Item>{
     private String name;
     private Integer count;
     private Double minsup;
@@ -9,7 +9,7 @@ public class Item {
     {
         this.name = name;
         count = 0;
-        minsup = 0.0;
+        minsup = 101.0;
     }
 
     public Item set_minsup(Double minsup)
@@ -51,7 +51,8 @@ public class Item {
                 .append(" Count: ")
                 .append(this.count)
                 .append(" Minsup: ")
-                .append(this.minsup);
+                .append(this.minsup)
+                .append("\n");
         return sb.toString();
     }
 
@@ -66,5 +67,10 @@ public class Item {
     public int compareTo(Item other)
     {
         return this.minsup.compareTo(other.minsup);
+    }
+
+    public static Integer compare(Item a, Item b)
+    {
+        return a.compareTo(b);
     }
 }

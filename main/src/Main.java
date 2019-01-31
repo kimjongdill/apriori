@@ -1,4 +1,6 @@
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Main {
 
@@ -13,12 +15,37 @@ public class Main {
         return;
     }
 
+    private static List<Sequence> initial_frequent_itemset(Items i, Integer n)
+    {
+        List<Item> l = i.toList();
+        List<Sequence> t = new ArrayList<>();
+        for(Item item : l)
+        {
+            Double support = item.get_count().doubleValue() / n.doubleValue();
+            if(support > item.get_minsup())
+                t.add(new Sequence(new String("<{" + item.get_name() + "}>"), i));
+        }
+
+        return t;
+    }
+
+    private static String format_output(List<Sequence> t)
+    {
+        StringBuilder sb = new StringBuilder();
+        sb.append("Number of length ")
+                .append(t.get(0).getLength())
+                .append(" Sequences: ")
+                .append(t.size())
+                .append("\n");
+        t.forEach( e -> sb.append(e.toString()).append("\n"));
+        return sb.toString();
+    }
 
     public static void main(String args[])
     {
-        String transaction_file = null;
+        String sequence_file = null;
         String parameter_file = null;
-        File transactions;
+        File sequences;
         File parameters;
 
         // Parse command line arguments for file names
@@ -26,7 +53,7 @@ public class Main {
         {
             if(args[i].equals("--d"))
             {
-                transaction_file = args[++i];
+                sequence_file = args[++i];
             }
             if(args[i].equals("--p"))
             {
@@ -34,25 +61,26 @@ public class Main {
             }
         }
         // Error check the command line arguments
-        if(transaction_file == null || parameter_file == null)
+        if(sequence_file == null || parameter_file == null)
         {
             System.err.println("Usage: java ms_gsp --d <Data File> --p <Parameter File>");
             return;
         }
         // Attempt to open files
-        transactions = new File(transaction_file);
+        sequences = new File(sequence_file);
         parameters = new File(parameter_file);
-        check_file(transactions);
+        check_file(sequences);
         check_file(parameters);
 
-        Transactions T = new Transactions(transactions);
-        Transaction s;
+        // Load all given items and Minimum Support
+        Items items = new Items(parameters);
+        // Cycle through sequences file, build a list of Items and frequency.
+        Sequences sequence_set = new Sequences(sequences, items);
 
-        System.out.println("First Time");
-        while((s = T.get_next_transaction()) != null)
-        {
-            System.out.println(s.toString());
-        }
+        // Begin MS-GSP Algorithm
+        List<Sequence> frequent_itemset = initial_frequent_itemset(items, sequence_set.get_transaction_count());
+        System.out.println(format_output(frequent_itemset));
+
 
     }
 
