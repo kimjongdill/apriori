@@ -78,9 +78,12 @@ public class Main {
         Sequences sequence_set = new Sequences(sequences, items);
 
         // Begin MS-GSP Algorithm
-        List<Sequence> frequent_itemset = initial_frequent_itemset(items, sequence_set.get_transaction_count());
-        System.out.println(format_output(frequent_itemset));
+        List<Candidates> candidate_rounds = new ArrayList<>();
+        candidate_rounds.add(new Candidates(items, sequence_set.get_transaction_count()));
 
+        System.out.println(candidate_rounds.get(0).toString());
+        candidate_rounds.add(new Candidates(items, candidate_rounds.get(0)));
+        System.out.println(candidate_rounds.get(1).toString());
 
     }
 

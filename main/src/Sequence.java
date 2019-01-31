@@ -1,11 +1,11 @@
 import java.io.*;
 import java.util.*;
 
-public class Sequence {
+public class Sequence implements Comparable<Sequence>{
     private final List<List<Item>> transaction;
     private final Integer length;
     private final Integer size;
-
+    private Integer count;
 
     Sequence(String s, Items i) {
 
@@ -38,6 +38,33 @@ public class Sequence {
         return h;
     }
 
+    public String get_all_but_last()
+    {
+        StringBuilder sb = new StringBuilder();
+        this.transaction.forEach( seq -> seq.forEach( i -> sb.append(i.get_name()).append(" ")));
+        return sb.toString();
+    }
+
+    public String get_all_but_second() {
+        Integer counter = 1;
+        StringBuilder sb = new StringBuilder();
+        for (List<Item> seq : this.transaction) {
+            for (Item i : seq) {
+                if (counter == 2)
+                    continue;
+                sb.append(i.get_name()).append(" ");
+            }
+        }
+        return sb.toString();
+    }
+
+    public String get_first() {
+        if(this.length > 0)
+        {
+            return this.transaction.get(0).get(0).get_name();
+        }
+        return "";
+    }
 
     public String toString() {
         StringBuilder sb = new StringBuilder("<");
@@ -62,4 +89,30 @@ public class Sequence {
     {
         return this.length;
     }
+
+    private List<Item> as_list_of_items()
+    {
+        List<Item> l = new ArrayList<>();
+        this.transaction.forEach(sub -> sub.forEach( item -> l.add(item)));
+        return l;
+    }
+
+    public int compareTo(Sequence b)
+    {
+        List<Item> a_list = this.as_list_of_items();
+        List<Item> b_list  = b.as_list_of_items();
+        Integer compare = 0;
+        for(int i = 0; i < a_list.size(); i++)
+        {
+            compare = a_list.get(i).compareTo(b_list.get(i));
+            if(compare != 0) break;
+        }
+        return compare;
+    }
+
+    public Integer compare(Sequence a, Sequence b)
+    {
+        return a.compareTo(b);
+    }
+
 }
