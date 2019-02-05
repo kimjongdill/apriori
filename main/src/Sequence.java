@@ -41,20 +41,44 @@ public class Sequence implements Comparable<Sequence>{
 
     public String get_all_but_last()
     {
+        Integer counter = 0;
         StringBuilder sb = new StringBuilder();
-        this.transaction.forEach( seq -> seq.forEach( i -> sb.append(i.get_name()).append(" ")));
+        for ( Item item : as_list_of_items()) {
+
+            if (counter == as_list_of_items().size()-1){
+                continue;
+            }
+
+            else{
+                sb.append(item.get_name()).append(" ");
+            }
+            ++counter;
+
+        }
         return sb.toString();
     }
-
+    public List<List<Item>> get_Copy(){
+        List<List<Item>> temp_List= new ArrayList<List<Item>>();
+        for (int i=0;i<this.transaction.size();++i){
+            temp_List.add(this.transaction.get(i));
+        }
+        System.out.println("Should be complete First Sequence");
+        return temp_List;
+    }
     public String get_all_but_second() {
-        Integer counter = 1;
+        Integer counter = 0;
         StringBuilder sb = new StringBuilder();
-        for (List<Item> seq : this.transaction) {
-            for (Item i : seq) {
-                if (counter == 2)
-                    continue;
-                sb.append(i.get_name()).append(" ");
+        for ( Item item : as_list_of_items()) {
+
+            if (counter == 1){
+                continue;
             }
+
+            else{
+                sb.append(item.get_name()).append(" ");
+            }
+            ++counter;
+
         }
         return sb.toString();
     }
@@ -66,6 +90,41 @@ public class Sequence implements Comparable<Sequence>{
         }
         return "";
     }
+    public Item get_firstItem(){
+
+        return this.transaction.get(0).get(0);
+
+    }
+    public Item getlastItem(){
+        int initial_Length=this.transaction.size();
+        int second_Length=this.transaction.get(initial_Length-1).size();
+        return this.transaction.get(initial_Length-1).get(second_Length-1);
+
+    }
+    public List<Item> getLastSet(){
+        int initial_Length=this.transaction.size();
+        //System.out.println("INside last set"+" "+this.transaction.get(initial_Length-1).toString());
+        return this.transaction.get(initial_Length-1);
+    }
+    public void add_Item(Item i,boolean Signal){
+
+        if (Signal){
+            //Seperate {}
+            List<Item> temp=new ArrayList<>();
+            temp.add(i);
+            this.transaction.add(temp);
+
+        }
+        else{
+            //at the end of the last {}
+        }
+    }
+    public int get_Size(){
+
+        return this.size.intValue();
+    }
+    /////////////
+    /////////////
 
     public String toString() {
         StringBuilder sb = new StringBuilder("<");
@@ -91,7 +150,7 @@ public class Sequence implements Comparable<Sequence>{
         return this.length;
     }
 
-    private List<Item> as_list_of_items()
+    public List<Item> as_list_of_items()
     {
         List<Item> l = new ArrayList<>();
         this.transaction.forEach(sub -> sub.forEach( item -> l.add(item)));
@@ -102,15 +161,35 @@ public class Sequence implements Comparable<Sequence>{
     {
         List<Item> a_list = this.as_list_of_items();
         List<Item> b_list  = b.as_list_of_items();
+
         Integer compare = 0;
         for(int i = 0; i < a_list.size(); i++)
         {
             compare = a_list.get(i).compareTo(b_list.get(i));
+
             if(compare != 0) break;
         }
+
         return compare;
     }
+    public int compareTo_2(Sequence b){
+        List<Item> a_list = this.as_list_of_items();
+        List<Item> b_list  = b.as_list_of_items();
+        // System.out.println("Alist"+a_list+" "+"Blist"+" "+b_list);
+        Integer compare = 0;
+        for(int i = 0; i < a_list.size(); i++)
+        {
+            //compare = a_list.get(i).toString()
 
+            //System.out.println("Digit Sequences"+ a_list.get(i).toString()+b_list.get(i).toString());
+            compare = a_list.get(i).toString().compareTo(b_list.get(i).toString());
+
+            if(compare != 0) break;
+
+        }
+        // System.out.println("Comparison returning..."+compare);
+        return compare;
+    }
     public Integer compare(Sequence a, Sequence b)
     {
         return a.compareTo(b);
