@@ -7,50 +7,42 @@ class Candidates {
 
     // The length of sequences in this Candidate set
     private Integer length;
-    private Map<String, List<Sequence>> candidates;
-
-    // Generate the initial list
+    private Integer transaction_count;
+    private List<Sequence> candidates;
+    // Generate the initial list11
     public Candidates(Items i, Integer n)
     {
-        candidates = new HashMap<>();
+        candidates = new ArrayList<Sequence>();
         this.length = 1;
+        this.transaction_count = n;
         List<Item> l = i.toList();
         for(Item item : l)
         {
             Double support = item.get_count().doubleValue() / n.doubleValue();
             if(support > item.get_minsup()) {
                 Sequence s = new Sequence(new String("<{" + item.get_name() + "}>"), i);
-                List<Sequence> list = new ArrayList<>();
-                list.add(s);
-                candidates.put(s.get_first(), list);
+                candidates.add(s);
             }
         }
     }
 
     public Candidates(Items i, Candidates previous_round)
     {
-        candidates = new HashMap<>();
+        candidates = new ArrayList<Sequence>();
         length = previous_round.length + 1;
-        List<Sequence> prev_seq = previous_round.get_all_sequence();
+        List<Sequence> prev_seq = previous_round.candidates;
+        this.transaction_count = previous_round.transaction_count;
         if(length == 2)
         {
             for(Sequence first : prev_seq){
                 for(Sequence second : prev_seq){
-                    List<Sequence> list = new ArrayList<>();
                     Sequence s = new Sequence(
                             new String("<{" + first.get_first() + "}{" + second.get_first() + "}>"), i);
-                    list.add(s);
-                    if(! first.equals(second)){
+                    candidates.add(s);
+                    if(! first.equals(second)) {
                         Sequence s2 = new Sequence(
                                 new String("<{" + first.get_first() + " " + second.get_first() + "}>"), i);
-                        list.add(s2);
-                    }
-                    if(candidates.containsKey(s.get_all_but_last())){
-                        candidates.get(s.get_all_but_last()).addAll(list);
-                    }
-                    else
-                    {
-                        candidates.put(s.get_all_but_last(), list);
+                        candidates.add(s2);
                     }
 
                 }
@@ -58,20 +50,31 @@ class Candidates {
         }
     }
 
-    public List<Sequence> get_all_sequence()
-    {
-        List<Sequence> list = new ArrayList<>();
-        this.candidates.forEach((k, v) -> v.forEach( s -> list.add(s)));
-        list.sort(null);
-        return list;
-    }
 
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
-        this.candidates.forEach((k, v) -> v.forEach( s -> sb.append(s.toString()).append("\n")));
+        this.candidates.forEach(v -> sb.append(v.toString()).append("\n"));
         return sb.toString();
     }
 
+    public void count_substrings(Sequence obs)
+    {
+        for(Sequence cand : this.candidates)
+        {
+            if(obs.is_subsequence(cand))
+                cand.incr_count();
+        }
+    }
 
+    public void prune()
+    {
+        List<Sequence> pruned_list = new ArrayList<Sequence>();
+        for(Sequence s : this.candidates)
+        {
+            if(s.meets_minimum_support(this.transaction_count))
+                pruned_list.add(s);
+        }
+        this.candidates = pruned_list;
+    }
 }

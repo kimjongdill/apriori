@@ -83,8 +83,14 @@ public class Main {
 
         System.out.println(candidate_rounds.get(0).toString());
         candidate_rounds.add(new Candidates(items, candidate_rounds.get(0)));
-        System.out.println(candidate_rounds.get(1).toString());
 
+        Sequence ref;
+        while((ref = sequence_set.get_next()) != null)
+        {
+            candidate_rounds.get(1).count_substrings(ref);
+        }
+        candidate_rounds.get(1).prune();
+        System.out.print(candidate_rounds.get(1).toString());
     }
 
 }

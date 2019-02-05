@@ -10,6 +10,7 @@ public class Sequence implements Comparable<Sequence>{
     Sequence(String s, Items i) {
 
         this.transaction = new ArrayList<List<Item>>();
+        this.count = 0;
         Integer length = 0;
         // Parse a text line
         String sequence_delims = "[{}]+";
@@ -115,4 +116,44 @@ public class Sequence implements Comparable<Sequence>{
         return a.compareTo(b);
     }
 
+    public void incr_count()
+    {
+        this.count++;
+    }
+
+    public Boolean is_subsequence(Sequence other)
+    {
+        if(other.length > this.length) return Boolean.FALSE;
+        if(other.size > this.size) return Boolean.FALSE;
+        List<Item> super_seq;
+        List<Item> sub_seq;
+        Integer super_ind = 0;
+        Integer sub_ind = 0;
+        for(int i=0; i < (this.size - other.size + 1); i++)
+        {
+            super_ind = i;
+            sub_ind = 0;
+            while(super_ind < this.size && sub_ind < other.size)
+            {
+                super_seq = this.transaction.get(super_ind);
+                sub_seq = other.transaction.get(sub_ind);
+                if(super_seq.containsAll(sub_seq))
+                    sub_ind++;
+                super_ind++;
+            }
+            if(super_ind == this.size && sub_ind == other.size)
+                return Boolean.TRUE;
+        }
+        return Boolean.FALSE;
+    }
+
+    private double get_minsup()
+    {
+        return Collections.min(this.get_unique_items()).get_minsup();
+    }
+
+    public Boolean meets_minimum_support(int total_records)
+    {
+        return this.count >= (this.get_minsup() * total_records);
+    }
 }
