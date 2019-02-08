@@ -92,7 +92,7 @@ class Candidates {
                     }
                 }
                 else if(MISLeast_Second(prev_seq.get(counter_1+a))   &&   (prev_seq.get(counter_1+a).compareTo_2(prev_seq.get(counter_1))!=0)){
-                    System.out.println("Second has the Least--Reverse");
+                    System.out.println("Second has the Least--Reverse-2 length");
                     if(potentialJoin_Reverse(prev_seq.get(counter_1),prev_seq.get(counter_1+a))){
                         Join_Reverse(prev_seq.get(counter_1),prev_seq.get(counter_1+a));
 
@@ -125,7 +125,7 @@ class Candidates {
                         Join(prev_seq.get(counter_1),prev_seq.get(counter_1+a));
                     }
                 }
-                else if(MISLeast_Second(prev_seq.get(counter_1))   &&   (prev_seq.get(counter_1+a).compareTo_2(prev_seq.get(counter_1))!=0)){
+                else if(MISLeast_Second(prev_seq.get(counter_1+a))   &&   (prev_seq.get(counter_1+a).compareTo_2(prev_seq.get(counter_1))!=0)){
                     System.out.println("Second has the Least--Reverse");
                     if(potentialJoin_Reverse(prev_seq.get(counter_1),prev_seq.get(counter_1+a))){
                         Join_Reverse(prev_seq.get(counter_1),prev_seq.get(counter_1+a));
@@ -155,8 +155,9 @@ class Candidates {
                         Join(prev_seq.get(counter_1),prev_seq.get(counter_1-a));
                     }
                 }
-                else if(MISLeast_Second(prev_seq.get(counter_1))   &&   (prev_seq.get(counter_1-a).compareTo_2(prev_seq.get(counter_1))!=0)){
-                    System.out.println("Second has the Least--Reverse");
+                else if(MISLeast_Second(prev_seq.get(counter_1-a))   &&   (prev_seq.get(counter_1-a).compareTo_2(prev_seq.get(counter_1))!=0)){
+                    System.out.println("Second has the Least--Reverse-Reverse");
+
                     if(potentialJoin_Reverse(prev_seq.get(counter_1),prev_seq.get(counter_1-a))){
                         Join_Reverse(prev_seq.get(counter_1),prev_seq.get(counter_1-a));
                     }
@@ -200,7 +201,7 @@ class Candidates {
             if (((S1.get_Size() == 1 && S1.getLength() == 2) && (S2.getlastItem().get_minsup()>S1.getlastItem().get_minsup()))
 
                     || (S1.getLength() > 2)) {
-                    Sequence S_Joined_3=new Sequence(S1,S2,false);
+                Sequence S_Joined_3=new Sequence(S1,S2,false);
                 this.final_candidates.add(S_Joined_3);
                 System.out.println("Joined Sequence-PROBLEM"+" "+S_Joined_3.toString());
                 //PrintFinalCandidates();

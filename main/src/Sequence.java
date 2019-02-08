@@ -63,7 +63,7 @@ public class Sequence implements Comparable<Sequence>{
         this.transaction = new ArrayList<List<Item>>();
         this.length=S2.getLength()+1;
 
-        if (bit){//Adds it at the beginnning, first set!!
+        if (bit){//Adds it at the beginnning, its own sepearte list--> first set!!
             this.size=S2.get_Size()+1;
             List <Item> temp=new ArrayList<Item>() ;
             temp.add(i);
