@@ -17,7 +17,9 @@ public class Item implements Comparable<Item>{
         this.minsup = minsup;
         return this;
     }
-
+    public void setCount(int Count){
+        this.count=Count;
+    }
     public Item incr_count()
     {
         count++;

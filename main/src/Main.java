@@ -70,6 +70,9 @@ public class Main {
         System.out.println(candidate_rounds.get(1).toString());
         candidate_rounds.add(new Candidates(items, candidate_rounds.get(1)));
 
+
+        //candidate_rounds.add(new Candidates(items, candidate_rounds.get(2).getFinalCandidates()));
+        //candidate_rounds.add(new Candidates(items, candidate_rounds.get(3).getFinalCandidates()));
     }
 
 }
