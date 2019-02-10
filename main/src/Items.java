@@ -82,4 +82,10 @@ public class Items {
         return list;
     }
 
+    public Double get_sdc()
+    {
+        return this.support_distance_constraint;
+    }
+
+
 }

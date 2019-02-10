@@ -9,6 +9,8 @@ class Candidates {
     private Integer length;
     private Integer transaction_count;
     private List<Sequence> candidates;
+    private final Double support_distance_contraint;
+
     // Generate the initial list11
     public Candidates(Items i, Integer n)
     {
@@ -16,22 +18,19 @@ class Candidates {
         this.length = 1;
         this.transaction_count = n;
         List<Item> l = i.toList();
-
+        this.support_distance_contraint = i.get_sdc();
         for(Item item : l)
         {
-            System.out.println("List of Items"+item.get_name()+" "+item.get_count()+" "+item.get_minsup());
             Double support = item.get_count().doubleValue() / n.doubleValue();
-            if(support > item.get_minsup()) {
-                Sequence s = new Sequence(new String("<{" + item.get_name() + "}>"), i);
-                candidates.add(s);
-            }
+            Sequence s = new Sequence(new String("<{" + item.get_name() + "}>"), i);
+            candidates.add(s);
         }
     }
 
     public Candidates(Items i, Candidates previous_round)
     {
         candidates = new ArrayList<Sequence>();
-
+        this.support_distance_contraint = i.get_sdc();
         length = previous_round.length + 1;
         List<Sequence> prev_seq = previous_round.candidates;
         this.transaction_count = previous_round.transaction_count;
@@ -40,12 +39,14 @@ class Candidates {
             for(Sequence first : prev_seq){
 
                 for(Sequence second : prev_seq){
+                    if(! first.meets_sdc(second, this.support_distance_contraint))
+                        continue;
 
                     List<Sequence> list = new ArrayList<>();
                     Sequence s = new Sequence(
                             new String("<{" + first.get_first() + "}{" + second.get_first() + "}>"), i);
                     candidates.add(s);
-                    if(! first.equals(second)) {
+                    if( first.compareTo(second) < 0 ) {
                         Sequence s2 = new Sequence(
                                 new String("<{" + first.get_first() + " " + second.get_first() + "}>"), i);
                         candidates.add(s2);
@@ -59,6 +60,7 @@ class Candidates {
         }
 
     }
+
     private void CandidateGeneration(Candidates previous_round){
 
         System.out.println("INside Candidate Generation "+previous_round.toString());

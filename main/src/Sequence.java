@@ -1,6 +1,9 @@
 import java.io.*;
 import java.util.*;
 
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
+
 public class Sequence implements Comparable<Sequence>{
     private final List<List<Item>> transaction;
     private final Integer length;
@@ -30,6 +33,65 @@ public class Sequence implements Comparable<Sequence>{
             this.transaction.add(set);
         }
         this.length = length;
+    }
+
+//    public Boolean can_merge(Sequence other, double sdc)
+//    {
+//        List<List<Sequence>> a, b;
+//        // Check minimum support distance
+//        if(! this.meets_sdc(other, sdc))
+//            return FALSE;
+//
+//
+//        if(this.unique_minsup_in_first())
+//        {
+//            // Remove the second item from s1
+//        }
+//        if(this.unique_minsup_in_last())
+//        {
+//            // Remove the second from last item from s2
+//        }
+//
+//    }
+
+    private Boolean unique_minsup_in_first()
+    {
+        double minsup = this.get_minsup();
+        int count = 0;
+        if(this.get_firstItem().get_minsup() > minsup)
+            return FALSE;
+
+        for(Item i : this.as_list_of_items())
+        {
+            if(i.get_minsup() == minsup)
+                count++;
+
+            if(count > 1)
+                return FALSE;
+        }
+
+        return TRUE;
+    }
+
+    private Boolean unique_minsup_in_last()
+    {
+        double minsup = this.get_minsup();
+        int count = 0;
+        List<Item> last_set = this.transaction.get(this.transaction.size() - 1);
+        if(last_set.size() > 1)
+            return FALSE;
+        if(last_set.get(0).get_minsup() != minsup)
+            return FALSE;
+
+        for(Item i : this.as_list_of_items())
+        {
+            if(i.get_minsup() == minsup)
+                count++;
+
+            if(count > 1)
+                return FALSE;
+        }
+        return TRUE;
     }
 
     public Set<Item> get_unique_items()
@@ -202,8 +264,8 @@ public class Sequence implements Comparable<Sequence>{
 
     public Boolean is_subsequence(Sequence other)
     {
-        if(other.length > this.length) return Boolean.FALSE;
-        if(other.size > this.size) return Boolean.FALSE;
+        if(other.length > this.length) return FALSE;
+        if(other.size > this.size) return FALSE;
         List<Item> super_seq;
         List<Item> sub_seq;
         Integer super_ind = 0;
@@ -220,15 +282,22 @@ public class Sequence implements Comparable<Sequence>{
                     sub_ind++;
                 super_ind++;
             }
-            if(super_ind == this.size && sub_ind == other.size)
-                return Boolean.TRUE;
+            if(sub_ind == other.size)
+                return TRUE;
         }
-        return Boolean.FALSE;
+        return FALSE;
     }
 
     private double get_minsup()
     {
         return Collections.min(this.get_unique_items()).get_minsup();
+    }
+    private double get_maxsup() { return Collections.max(this.get_unique_items()).get_minsup(); }
+
+    public Boolean meets_sdc(Sequence other, double sdc)
+    {
+        return ((Math.abs(other.get_maxsup() - this.get_minsup()) <= sdc) &&
+                (Math.abs(this.get_maxsup() - other.get_minsup()) <= sdc));
     }
 
     public Boolean meets_minimum_support(int total_records)
