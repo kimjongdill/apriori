@@ -35,24 +35,127 @@ public class Sequence implements Comparable<Sequence>{
         this.length = length;
     }
 
-//    public Boolean can_merge(Sequence other, double sdc)
-//    {
-//        List<List<Sequence>> a, b;
-//        // Check minimum support distance
-//        if(! this.meets_sdc(other, sdc))
-//            return FALSE;
-//
-//
-//        if(this.unique_minsup_in_first())
-//        {
-//            // Remove the second item from s1
-//        }
-//        if(this.unique_minsup_in_last())
-//        {
-//            // Remove the second from last item from s2
-//        }
-//
-//    }
+    public Sequence(Sequence a, Sequence b)
+    {
+        List<List<Item>> x = deep_copy(a);
+        List<List<Item>> y = deep_copy(b);
+
+        if(y.get(y.size() - 1).size() == 1){
+            x.add(y.get(y.size() - 1));
+            this.size = a.size + 1;
+        }
+        else {
+            List<Item> x_last = x.get(x.size() - 1);
+            List<Item> y_last = y.get(y.size() - 1);
+            x_last.add(y_last.get(y_last.size() - 1));
+            x_last.sort(null);
+            this.size = a.size;
+        }
+        this.transaction = x;
+        this.length = a.getLength() + 1;
+        this.count = 0;
+
+    }
+
+    private List<Item> add_unique(List<Item> a, List<Item> b)
+    {
+        for(Item i : b)
+        {
+            if (a.contains(i))
+                continue;
+            a.add(i);
+        }
+        a.sort(null);
+        return a;
+    }
+
+    public Boolean can_merge(Sequence other, double sdc)
+    {
+        List<List<Item>> a, b;
+        // Check minimum support distance
+        if(! this.meets_sdc(other, sdc))
+            return FALSE;
+
+        a = this.without_first();
+        b = other.without_last();
+
+        if(this.unique_minsup_in_first())
+        {
+            a = this.without_n(2);
+        }
+        if(this.unique_minsup_in_last())
+        {
+            b = this.without_n(other.getLength() - 2);
+        }
+
+        return a.equals(b);
+    }
+
+    private static List<List<Item>> deep_copy(Sequence a)
+    {
+        List<List<Item>> l = new ArrayList<>();
+        for(List<Item> j : a.transaction)
+        {
+            List<Item> i = new ArrayList<>();
+            for(Item k : j)
+            {
+                i.add(k);
+            }
+            l.add(i);
+        }
+        return l;
+    }
+
+    private List<List<Item>> without_first()
+    {
+        List<List<Item>> l = deep_copy(this);
+        l.get(0).remove(0);
+        if(l.get(0).size() == 0)
+            l.remove(0);
+
+        return l;
+    }
+
+    private List<List<Item>> without_last()
+    {
+        List<List<Item>> l = deep_copy(this);
+        List<Item> last = l.get(l.size() -1);
+        last.remove(last.size() - 1);
+        if(last.size() == 0)
+        {
+            l.remove(l.size() - 1);
+        }
+        return l;
+    }
+
+    private List<List<Item>> without_n(int n)
+    {
+        List<List<Item>> l = deep_copy(this);
+        int count = 0;
+        int setCount = 0;
+
+        List<Item> last_set = null;
+        Item last_item = null;
+        for(List<Item> set : l) {
+            for (Item i : set) {
+                count++;
+                if (count == n)
+                {
+                    last_set = set;
+                    last_item = i;
+                    break;
+                }
+            }
+        }
+        if(last_set == null || last_item == null)
+            return l;
+
+        last_set.remove(last_item);
+        if(last_set.size() == 0)
+            l.remove(last_set);
+
+        return l;
+    }
 
     private Boolean unique_minsup_in_first()
     {

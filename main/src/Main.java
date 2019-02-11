@@ -91,6 +91,9 @@ public class Main {
         }
         candidate_rounds.get(1).prune();
         System.out.print(candidate_rounds.get(1).toString());
+
+        candidate_rounds.add(new Candidates(items, candidate_rounds.get(1)));
+        System.out.print(candidate_rounds.get(2).toString());
     }
 
 }

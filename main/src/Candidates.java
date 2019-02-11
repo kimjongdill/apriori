@@ -56,7 +56,17 @@ class Candidates {
             }
         }
         else{
-            CandidateGeneration(previous_round);
+            for(Sequence first : prev_seq){
+                for(Sequence second : prev_seq){
+                    if(first.can_merge(second, support_distance_contraint)) {
+                        Sequence s = new Sequence(first, second);
+                        this.candidates.add(s);
+                        System.out.println(first.toString() + "can merge with " + second.toString() + " Making "
+                                + s.toString());
+                    }
+
+                }
+            }
         }
 
     }
