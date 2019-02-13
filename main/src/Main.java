@@ -41,28 +41,23 @@ public class Main {
         return sb.toString();
     }
 
-    public static void main(String args[])
-    {
+    public static void main(String args[]) {
         String sequence_file = null;
         String parameter_file = null;
         File sequences;
         File parameters;
 
         // Parse command line arguments for file names
-        for(int i = 0; i < args.length; i++)
-        {
-            if(args[i].equals("--d"))
-            {
+        for (int i = 0; i < args.length; i++) {
+            if (args[i].equals("--d")) {
                 sequence_file = args[++i];
             }
-            if(args[i].equals("--p"))
-            {
+            if (args[i].equals("--p")) {
                 parameter_file = args[++i];
             }
         }
         // Error check the command line arguments
-        if(sequence_file == null || parameter_file == null)
-        {
+        if (sequence_file == null || parameter_file == null) {
             System.err.println("Usage: java ms_gsp --d <Data File> --p <Parameter File>");
             return;
         }
@@ -78,26 +73,41 @@ public class Main {
         Sequences sequence_set = new Sequences(sequences, items);
 
         // Begin MS-GSP Algorithm
-        List<Candidates> candidate_rounds = new ArrayList<>();
-        candidate_rounds.add(new Candidates(items, sequence_set.get_transaction_count()));
+        Candidates previous_candidates = new Candidates(items, sequence_set.get_transaction_count());
+        Candidates current_candidates = new Candidates(items, previous_candidates);
 
-        System.out.println(candidate_rounds.get(0).toString());
-        candidate_rounds.add(new Candidates(items, candidate_rounds.get(0)));
-
+        // Print the stage 1 and stage 2 stuff here
         Sequence ref;
-        while((ref = sequence_set.get_next()) != null)
+        while ((ref = sequence_set.get_next()) != null){
+            current_candidates.count_substrings(ref);
+            previous_candidates.count_substrings(ref);
+        }
+        current_candidates.trim_infrequent();
+        previous_candidates.trim_infrequent();
+        System.out.println("Number of Length 1 Frequency Sentences: " + previous_candidates.size());
+        System.out.println(previous_candidates.toString());
+        System.out.println("Number of Length 2 Frequency Sentences: " + current_candidates.size());
+        System.out.println(current_candidates.toString());
+
+        previous_candidates = current_candidates;
+
+        Integer length = 3;
+        while (previous_candidates.size() > 0)
         {
-            candidate_rounds.get(1).count_substrings(ref);
+            current_candidates = new Candidates(items, previous_candidates);
+
+            while ((ref = sequence_set.get_next()) != null) {
+                current_candidates.count_substrings(ref);
+            }
+
+            current_candidates.trim_infrequent();
+            System.out.println("Number of Length " + length + " Frequency Sentences: " + current_candidates.size());
+            System.out.print(current_candidates.toString());
+
+            length++;
+            previous_candidates = current_candidates;
         }
 
-        candidate_rounds.get(1).prune();
-        System.out.print(candidate_rounds.get(1).toString());
-
-        candidate_rounds.add(new Candidates(items, candidate_rounds.get(1)));
-
-
-        System.out.print(candidate_rounds.get(2).toString());
-        //System.out.print(candidate_rounds.get(3).toString());
     }
 
 }

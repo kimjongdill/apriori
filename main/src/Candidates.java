@@ -1,14 +1,14 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+
+import static java.lang.Boolean.FALSE;
+import static java.lang.Boolean.TRUE;
 
 class Candidates {
 
     // The length of sequences in this Candidate set
     private Integer length;
     private Integer transaction_count;
-    private List<Sequence> candidates;
+    private Set<Sequence> candidates;
     private final Double support_distance_contraint;
 
     // Generate candidates of length 1
@@ -16,7 +16,7 @@ class Candidates {
     {
         this.length = 1;
         this.transaction_count = n;
-        candidates = new ArrayList<Sequence>();
+        candidates = new HashSet<Sequence>();
         this.support_distance_contraint = i.get_sdc();
 
         List<Item> l = i.toList();
@@ -25,6 +25,7 @@ class Candidates {
             Sequence s = new Sequence(new String("<{" + item.get_name() + "}>"), i);
             candidates.add(s);
         }
+        //this.candidates.sort(null);
     }
 
     // Generate candidates of length 2, > 2
@@ -44,11 +45,12 @@ class Candidates {
             this.candidates = generate_sequences(   previous_round.candidates,
                                                     support_distance_contraint);
         }
+        //this.candidates.sort(null);
     }
 
-    private static List<Sequence> generate_sequences(List<Sequence> prev_seq, double sdc){
+    private static Set<Sequence> generate_sequences(Set<Sequence> prev_seq, double sdc){
 
-        List<Sequence> accumulate_sequences = new ArrayList<>();
+        Set<Sequence> accumulate_sequences = new HashSet<>();
         for(Sequence sequence_1 : prev_seq)
         {
             for(Sequence sequence_2 : prev_seq) {
@@ -61,23 +63,23 @@ class Candidates {
                 Boolean unique_minsup_in_last = sequence_2.unique_minsup_in_last();
                 Boolean length_two_edge_case = sequence_1.getLength() == sequence_2.getLength() &&
                         sequence_1.get_Size() == sequence_2.get_Size() &&
-                        sequence_1.get_Size() == 2 &&
+                        sequence_1.getLength() == 2 &&
                         sequence_1.get_Size() == 2;
 
                 if( unique_minsup_in_first && !unique_minsup_in_last )
                 {
-                    sequences.add(new Sequence(sequence_1, sequence_2, Boolean.FALSE));
+                    sequences.add(new Sequence(sequence_1, sequence_2, FALSE));
                     if(length_two_edge_case)
                     {
-                        sequences.add(new Sequence(sequence_1, sequence_2, Boolean.TRUE));
+                        sequences.add(new Sequence(sequence_1, sequence_2, TRUE));
                     }
                 }
                 else if( unique_minsup_in_last )
                 {
-                    sequences.add(new Sequence(sequence_1, sequence_2, Boolean.FALSE, Boolean.TRUE));
+                    sequences.add(new Sequence(sequence_1, sequence_2, FALSE, TRUE));
                     if(length_two_edge_case)
                     {
-                        sequences.add(new Sequence(sequence_1, sequence_2, Boolean.FALSE, Boolean.TRUE));
+                        sequences.add(new Sequence(sequence_1, sequence_2, FALSE, TRUE));
                     }
                 }
                 // The default join process
@@ -86,21 +88,26 @@ class Candidates {
                     sequences.add(new Sequence(sequence_1, sequence_2));
                 }
 
-                StringBuilder sb = new StringBuilder();
-                sequences.forEach( s -> sb.append(s.toString()));
+//                StringBuilder sb = new StringBuilder();
+//                sequences.forEach( s -> sb.append(s.toString()));
+//                System.out.println(sequence_1.toString() + " + " + sequence_2.toString() + " = " + sb.toString());
 
-                System.out.println(sequence_1.toString() + " + " + sequence_2.toString() + " = " + sb.toString());
-                accumulate_sequences.addAll(sequences);
+                for(Sequence s : sequences)
+                {
+                    if(!should_be_pruned(s, prev_seq))
+                        accumulate_sequences.add(s);
+                }
+                //accumulate_sequences.addAll(sequences);
             }
         }
         return accumulate_sequences;
     }
 
 
-    private static List<Sequence> generate_length_two_sequences(List<Sequence> length_one_sequences,
+    private static Set<Sequence> generate_length_two_sequences(Set<Sequence> length_one_sequences,
                                                                 Double sdc,
                                                                 Items i){
-        List<Sequence> l2_sequences = new ArrayList<>();
+        Set<Sequence> l2_sequences = new HashSet<>();
 
         for(Sequence first : length_one_sequences){
             for(Sequence second : length_one_sequences){
@@ -123,6 +130,23 @@ class Candidates {
         return l2_sequences;
     }
 
+    private static Boolean should_be_pruned(Sequence s, Set<Sequence> prev_list)
+    {
+        // Check for duplicate items in an itemset
+        if(!s.is_valid_sequence())
+            return TRUE;
+
+        // Check all valid subsequences are frequent
+//        List<Sequence> l = s.get_all_subsequences_with_min_minsup();
+//        for( Sequence seq : l )
+//        {
+//            if(!prev_list.contains(seq))
+//                return TRUE;
+//        }
+        return FALSE;
+    }
+
+
     public String toString()
     {
         StringBuilder sb = new StringBuilder();
@@ -140,9 +164,9 @@ class Candidates {
         }
     }
 
-    public void prune()
+    public void trim_infrequent()
     {
-        List<Sequence> pruned_list = new ArrayList<Sequence>();
+        Set<Sequence> pruned_list = new HashSet<Sequence>();
         for(Sequence s : this.candidates)
         {
             if(s.meets_minimum_support(this.transaction_count))
@@ -150,7 +174,15 @@ class Candidates {
         }
         this.candidates = pruned_list;
     }
+
+    public int size()
+    {
+        return this.candidates.size();
+    }
 }
+
+
+
 
 //    private void CandidateGeneration(Candidates previous_round){
 //        length = previous_round.length + 1;

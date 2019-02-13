@@ -39,7 +39,7 @@ public class Sequence implements Comparable<Sequence>{
     public Sequence(Sequence a, Sequence b, boolean append_itemset){///Joining Process
         this.sequence = new ArrayList<List<Item>>();
         this.length = a.getLength()+1;
-
+        this.count = 0;
         List<List<Item>> s1 = deep_copy(a);
         List<List<Item>> s2 = deep_copy(b);
 
@@ -69,6 +69,7 @@ public class Sequence implements Comparable<Sequence>{
         Item i = a.sequence.get(0).get(0);
         this.size = b.get_Size();
         this.length=b.getLength()+1;
+        this.count = 0;
 
         if (append_itemset){//Adds it at the beginning, its own separate list--> first set!!
             this.size++;
@@ -106,6 +107,23 @@ public class Sequence implements Comparable<Sequence>{
 
     }
 
+    private Sequence(List<List<Item>> l)
+    {
+        int my_length = 0;
+        int my_count = 0;
+        sequence = l;
+
+        for( List<Item> subsequence : l) {
+            my_count++;
+            for (Item item : subsequence) {
+                my_length++;
+            }
+        }
+        length = my_length;
+        size = my_count;
+        count = 0;
+        return;
+    }
     private List<Item> add_unique(List<Item> a, List<Item> b)
     {
         for(Item i : b)
@@ -130,7 +148,7 @@ public class Sequence implements Comparable<Sequence>{
 
         if(this.unique_minsup_in_first() && !other.unique_minsup_in_last())
         {
-            a = this.without_n(2);
+            a = this.without_n(1);
         }
         else if(other.unique_minsup_in_last())
         {
@@ -187,13 +205,13 @@ public class Sequence implements Comparable<Sequence>{
         Item last_item = null;
         for(List<Item> set : l) {
             for (Item i : set) {
-                count++;
                 if (count == n)
                 {
                     last_set = set;
                     last_item = i;
                     break;
                 }
+                count++;
             }
         }
         if(last_set == null || last_item == null)
@@ -252,91 +270,7 @@ public class Sequence implements Comparable<Sequence>{
         sequence.forEach(sequence -> sequence.forEach(item -> h.add(item)));
         return h;
     }
-    public List<List<Item>> get_Copy(){
-        List<List<Item>> temp_List= new ArrayList<List<Item>>();
-        for (int i = 0; i<this.sequence.size(); ++i){
-            List<Item> temp= new ArrayList<>();
-            for(Item ii: this.sequence.get(i)){
-                temp.add(ii);
 
-            }
-            temp_List.add(temp);
-
-        }
-      // System.out.println("Should be cCOPY"+temp_List.toString());
-        return temp_List;
-    }
-    public String get_all_butFirst(){
-        Integer counter = 0;
-        StringBuilder sb = new StringBuilder();
-        for ( Item item : as_list_of_items()) {
-
-            if (counter == 0){
-                continue;
-            }
-
-            else{
-                sb.append(item.get_name()).append(" ");
-            }
-            ++counter;
-
-        }
-        return sb.toString();
-    }
-    public String get_all_but_secondtoLast(){
-        Integer counter = 0;
-        StringBuilder sb = new StringBuilder();
-        for ( Item item : as_list_of_items()) {
-
-            if (counter == as_list_of_items().size()-2){
-                continue;
-            }
-
-            else{
-                sb.append(item.get_name()).append(" ");
-            }
-            ++counter;
-
-        }
-        return sb.toString();
-    }
-    public String get_all_but_last()
-    {
-        Integer counter = 0;
-        StringBuilder sb = new StringBuilder();
-        for ( Item item : as_list_of_items()) {
-
-            if (counter == as_list_of_items().size()-1){
-                continue;
-            }
-
-            else{
-                sb.append(item.get_name()).append(" ");
-            }
-            ++counter;
-
-        }
-        return sb.toString();
-    }
-
-    public String get_all_but_second() {
-        int counter = 0;
-        StringBuilder sb = new StringBuilder();
-       //System.out.println("As List of items"+as_list_of_items());
-        for ( Item item : as_list_of_items()) {
-
-            if (counter == 1){
-
-            }
-
-            else{
-                sb.append(item.get_name()).append(" ");
-            }
-            ++counter;
-
-        }
-        return sb.toString();
-    }
 
     public String get_first() {
         if(this.length > 0)
@@ -350,39 +284,12 @@ public class Sequence implements Comparable<Sequence>{
         return this.sequence.get(0).get(0);
 
     }
-    public Item getlastItem(){
-        int initial_Length=this.sequence.size();
-        int second_Length=this.sequence.get(initial_Length-1).size();
-        return this.sequence.get(initial_Length-1).get(second_Length-1);
 
-    }
-    public List<Item> getLastSet(){
-        int initial_Length=this.sequence.size();
-        //System.out.println("INside last set"+" "+this.sequence.get(initial_Length-1).toString());
-        return this.sequence.get(initial_Length-1);
-    }
-    public List<Item> getFirstSet(){
-       return this.sequence.get(0);
-    }
-    public void add_Item(Item i,boolean Signal){
-
-        if (Signal){
-            //Seperate {}
-            List<Item> temp=new ArrayList<>();
-            temp.add(i);
-            this.sequence.add(temp);
-
-        }
-        else{
-            //at the end of the last {}
-        }
-    }
     public int get_Size(){
 
         return this.size.intValue();
     }
-    /////////////
-    /////////////
+
 
     public String toString() {
         StringBuilder sb = new StringBuilder("<");
@@ -458,6 +365,7 @@ public class Sequence implements Comparable<Sequence>{
         this.count++;
     }
 
+
     public Boolean is_subsequence(Sequence other)
     {
         if(other.length > this.length) return FALSE;
@@ -498,6 +406,47 @@ public class Sequence implements Comparable<Sequence>{
 
     public Boolean meets_minimum_support(int total_records)
     {
-        return this.count >= (this.get_minsup() * total_records);
+        double minsup = this.get_minsup();
+        double support = minsup * total_records;
+        double count = this.count;
+        return count >= support;
+    }
+
+    public Boolean is_valid_sequence()
+    {
+
+        for(List<Item> last_itemset : sequence ) {
+            for (int i = 0; i < last_itemset.size() - 1; i++) {
+                if (last_itemset.get(i) == last_itemset.get(i + 1))
+                    return FALSE;
+            }
+        }
+        return TRUE;
+    }
+
+    public Boolean equals(Sequence other)
+    {
+        if(other == null)
+            return FALSE;
+        if(this == other)
+            return TRUE;
+
+        String s1 = this.toString();
+        String s2 = other.toString();
+        return s1.equals(s2);
+    }
+
+    public List<Sequence> get_all_subsequences_with_min_minsup() {
+       List<Sequence> l = new ArrayList<Sequence>();
+       double min_minsup = this.get_minsup();
+       for(int pos_to_remove = 0; pos_to_remove < length; pos_to_remove++)
+       {
+           List<List<Item>> sub = without_n(pos_to_remove);
+           Sequence subsequence = new Sequence(sub);
+           if(subsequence.get_minsup() == min_minsup) {
+               l.add(subsequence);
+           }
+       }
+       return l;
     }
 }
