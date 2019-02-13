@@ -68,7 +68,12 @@ public class Item implements Comparable<Item>{
 
     public int compareTo(Item other)
     {
-        return this.minsup.compareTo(other.minsup);
+        int ms = this.minsup.compareTo(other.minsup);
+        if(ms == 0)
+        {
+            return this.name.compareTo(other.name);
+        }
+        return ms;
     }
 
     public static Integer compare(Item a, Item b)
