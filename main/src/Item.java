@@ -60,10 +60,10 @@ public class Item implements Comparable<Item>{
 
     public boolean equals(Item other)
     {
-        if(this.name.equals(other.name) && this.count.equals(other.count) && this.minsup.equals(other.minsup) )
-            return true;
+        if(other == null)
+            return false;
 
-        return false;
+        return this.name.equals(other.name);
     }
 
     public int compareTo(Item other)
@@ -80,4 +80,6 @@ public class Item implements Comparable<Item>{
     {
         return a.compareTo(b);
     }
+
+
 }

@@ -143,26 +143,37 @@ public class Sequence implements Comparable<Sequence>{
         return a;
     }
 
-    public Boolean can_merge(Sequence other, double sdc)
-    {
+    public Boolean can_merge(Sequence other, double sdc) {
         List<List<Item>> a, b;
         // Check minimum support distance
-        if(! this.meets_sdc(other, sdc))
+        if (!this.meets_sdc(other, sdc))
             return FALSE;
 
         a = this.without_first();
         b = other.without_last();
 
-        if(this.unique_minsup_in_first() && !other.unique_minsup_in_last())
-        {
+        if (this.unique_minsup_in_first() && !other.unique_minsup_in_last()) {
             a = this.without_n(1);
-        }
-        else if(other.unique_minsup_in_last() && !other.unique_minsup_in_first())
-        {
+        } else if (other.unique_minsup_in_last() && !this.unique_minsup_in_first()) {
             b = this.without_n(other.getLength() - 2);
         }
 
-        return a.toString().equals(b.toString());
+        return a.equals(b);
+//        for (List<Item> s1 : a){
+//            for (List<Item> s2 : b) {
+//                if (!a.equals(b)){
+//                    for(Item i1 : s1){
+//                        for(Item i2 : s2)
+//                        {
+//                            if(! i1.equals(i2))
+//                                return false;
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        return true;
     }
 
     private static List<List<Item>> deep_copy(Sequence a)
@@ -205,7 +216,7 @@ public class Sequence implements Comparable<Sequence>{
     private List<List<Item>> without_n(int n)
     {
         List<List<Item>> l = deep_copy(this);
-        int count = 0;
+        int count = -1;
         int setCount = 0;
 
         List<Item> last_set = null;
@@ -213,14 +224,16 @@ public class Sequence implements Comparable<Sequence>{
 
         for(List<Item> set : l) {
             for (Item i : set) {
+                count++;
                 if (count == n)
                 {
                     last_set = set;
                     last_item = i;
                     break;
                 }
-                count++;
             }
+            if(count == n)
+                break;
         }
         if(last_set == null || last_item == null)
             return l;
