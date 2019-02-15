@@ -155,7 +155,7 @@ public class Sequence implements Comparable<Sequence>{
         if (this.unique_minsup_in_first() && !other.unique_minsup_in_last()) {
             a = this.without_n(1);
         } else if (other.unique_minsup_in_last() && !this.unique_minsup_in_first()) {
-            b = this.without_n(other.getLength() - 2);
+            b = other.without_n(other.getLength() - 2);
         }
 
         return a.equals(b);
