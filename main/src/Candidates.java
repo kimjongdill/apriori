@@ -8,7 +8,7 @@ class Candidates {
     // The length of sequences in this Candidate set
     private Integer length;
     private Integer transaction_count;
-    private Set<Sequence> candidates;
+    private List<Sequence> candidates;
     private final Double support_distance_contraint;
 
     // Generate candidates of length 1
@@ -16,7 +16,7 @@ class Candidates {
     {
         this.length = 1;
         this.transaction_count = n;
-        candidates = new HashSet<Sequence>();
+        candidates = new ArrayList<Sequence>();
         this.support_distance_contraint = i.get_sdc();
 
         List<Item> l = i.toList();
@@ -48,9 +48,9 @@ class Candidates {
         //this.candidates.sort(null);
     }
 
-    private static Set<Sequence> generate_sequences(Set<Sequence> prev_seq, double sdc){
+    private static List<Sequence> generate_sequences(List<Sequence> prev_seq, double sdc){
 
-        Set<Sequence> accumulate_sequences = new HashSet<>();
+        List<Sequence> accumulate_sequences = new ArrayList<>();
         for(Sequence sequence_1 : prev_seq)
         {
             for(Sequence sequence_2 : prev_seq) {
@@ -95,7 +95,7 @@ class Candidates {
                 for(Sequence s : sequences)
                 {
                     if(!should_be_pruned(s, prev_seq))
-                        accumulate_sequences.add(s);
+                        accumulate_sequences = add_if_unique(s, accumulate_sequences);
                 }
                 //accumulate_sequences.addAll(sequences);
             }
@@ -103,11 +103,20 @@ class Candidates {
         return accumulate_sequences;
     }
 
+    private static List<Sequence> add_if_unique(Sequence s, List<Sequence> l){
+        int index = Collections.binarySearch(l, s, null);
+        if(index < 0)
+        {
+            l.add(-(index + 1), s);
+        }
+        return l;
+    }
 
-    private static Set<Sequence> generate_length_two_sequences(Set<Sequence> length_one_sequences,
+
+    private static List<Sequence> generate_length_two_sequences(List<Sequence> length_one_sequences,
                                                                 Double sdc,
                                                                 Items i){
-        Set<Sequence> l2_sequences = new HashSet<>();
+        List<Sequence> l2_sequences = new ArrayList<>();
 
         for(Sequence first : length_one_sequences){
             for(Sequence second : length_one_sequences){
@@ -130,7 +139,7 @@ class Candidates {
         return l2_sequences;
     }
 
-    private static Boolean should_be_pruned(Sequence s, Set<Sequence> prev_list)
+    private static Boolean should_be_pruned(Sequence s, List<Sequence> prev_list)
     {
         // Check for duplicate items in an itemset
         if(!s.is_valid_sequence())
@@ -166,7 +175,7 @@ class Candidates {
 
     public void trim_infrequent()
     {
-        Set<Sequence> pruned_list = new HashSet<Sequence>();
+        List<Sequence> pruned_list = new ArrayList<Sequence>();
         for(Sequence s : this.candidates)
         {
             if(s.meets_minimum_support(this.transaction_count))

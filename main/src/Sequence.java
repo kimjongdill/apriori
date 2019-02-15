@@ -324,19 +324,34 @@ public class Sequence implements Comparable<Sequence>{
 
     public int compareTo(Sequence b)
     {
-        List<Item> a_list = this.as_list_of_items();
-        List<Item> b_list  = b.as_list_of_items();
+        if(b == null)
+            return 1;
 
-        Integer compare = 0;
-        for(int i = 0; i < a_list.size(); i++)
-        {
-            compare = a_list.get(i).compareTo(b_list.get(i));
+        String s1 = this.toString();
+        String s2 = b.toString();
 
-            if(compare != 0) break;
-        }
-
-        return compare;
+        return s1.compareTo(s2);
     }
+
+    public Boolean equals(Sequence other)
+    {
+        if(other == null)
+            return FALSE;
+        if(this == other)
+            return TRUE;
+
+        String s1 = this.toString();
+        String s2 = other.toString();
+        return s1.equals(s2);
+    }
+
+    public int hashCode()
+    {
+        int hash_code = this.toString().hashCode();
+        //System.out.println(this.toString() + " " + hash_code);
+        return hash_code;
+    }
+
     public int compareTo_2(Sequence b){
         List<Item> a_list = this.as_list_of_items();
         List<Item> b_list  = b.as_list_of_items();
@@ -424,17 +439,7 @@ public class Sequence implements Comparable<Sequence>{
         return TRUE;
     }
 
-    public Boolean equals(Sequence other)
-    {
-        if(other == null)
-            return FALSE;
-        if(this == other)
-            return TRUE;
 
-        String s1 = this.toString();
-        String s2 = other.toString();
-        return s1.equals(s2);
-    }
 
     public List<Sequence> get_all_subsequences_with_min_minsup() {
        List<Sequence> l = new ArrayList<Sequence>();
