@@ -55,9 +55,16 @@ class Candidates {
         {
             for(Sequence sequence_2 : prev_seq) {
 
-                if(!sequence_1.can_merge(sequence_2, sdc))
-                    continue;
 
+               // System.out.println("New One"+" "+sequence_1.toString()  + sequence_2.toString());
+
+                if(!sequence_1.can_merge(sequence_2, sdc)){
+                    //System.out.println("Continued!!");
+                    continue;
+                }
+
+
+                //System.out.println("Not Continued!!!");
                 List<Sequence> sequences = new ArrayList<>();
                 Boolean unique_minsup_in_first = sequence_1.unique_minsup_in_first();
                 Boolean unique_minsup_in_last = sequence_2.unique_minsup_in_last();
@@ -91,8 +98,8 @@ class Candidates {
 
                 StringBuilder sb = new StringBuilder();
                 sequences.forEach( s -> sb.append(s.toString()));
-                System.out.println(sequence_1.toString() + " + " + sequence_2.toString() + " = " + sb.toString());
-
+                //System.out.println(sequence_1.toString() + " david+ " + sequence_2.toString() + " = " + sb.toString());
+               // System.out.println("Prev Seq List"+" "+prev_seq.toString());
                 for(Sequence s : sequences)
                 {
                     if(!should_be_pruned(s, prev_seq))
@@ -147,12 +154,19 @@ class Candidates {
             return TRUE;
 
         // Check all valid subsequences are frequent
-//        List<Sequence> l = s.get_all_subsequences_with_min_minsup();
-//        for( Sequence seq : l )
-//        {
-//            if(!prev_list.contains(seq))
-//                return TRUE;
-//        }
+        List<Sequence> l = s.get_all_subsequences_with_min_minsup();
+        for( Sequence seq : l )
+        {
+            for (Sequence temp: prev_list){
+                if(seq.toString().compareTo(temp.toString())==0){
+                    System.out.println("found it!!! in prevseq"+" "+seq.toString()+" "+temp.toString());
+                    return FALSE;
+                }
+            }
+
+
+        }
+        System.out.println("Never found it");
         return FALSE;
     }
 

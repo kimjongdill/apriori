@@ -42,20 +42,14 @@ public class Main {
     }
 
     public static void main(String args[]) {
-        String sequence_file = null;
-        String parameter_file = null;
+        String sequence_file = "C:\\Data_Mining\\main\\resources\\data-1.txt";
+        String parameter_file = "C:\\Data_Mining\\main\\resources\\para1-1.txt";
+
         File sequences;
         File parameters;
 
         // Parse command line arguments for file names
-        for (int i = 0; i < args.length; i++) {
-            if (args[i].equals("--d")) {
-                sequence_file = args[++i];
-            }
-            if (args[i].equals("--p")) {
-                parameter_file = args[++i];
-            }
-        }
+
         // Error check the command line arguments
         if (sequence_file == null || parameter_file == null) {
             System.err.println("Usage: java ms_gsp --d <Data File> --p <Parameter File>");
