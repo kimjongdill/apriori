@@ -43,17 +43,14 @@ public class Sequence implements Comparable<Sequence>{
         List<List<Item>> s1 = deep_copy(a);
         List<List<Item>> s2 = deep_copy(b);
 
-        //Bundle the last item from s2 into its own itemset and append to s1
-        if (append_itemset){
-            this.size = a.get_Size()+1;
-            List<Item> last_itemset = s2.get(s2.size() - 1);
-            Item last_item = last_itemset.get(last_itemset.size() - 1);
-            last_itemset = new ArrayList<Item>();
-            last_itemset.add(last_item);
-            s1.add(last_itemset);
+        if(append_itemset)
+        {
+            this.size = a.get_Size() + 1;
+            s1.add(s2.get(s2.size() - 1));
         }
-        else{//The item gets added at the end of the last element of S1
-            this.size=a.get_Size();
+        else
+        {
+            this.size = a.get_Size();
             List<Item> last_itemset = s2.get(s2.size() - 1);
             Item last_item = last_itemset.get(last_itemset.size() - 1);
             s1.get(s1.size() - 1).add(last_item);
@@ -63,15 +60,25 @@ public class Sequence implements Comparable<Sequence>{
         this.sequence = s1;
     }
 
+    private static List<List<Item>> add_to_last_element(List<List<Item>> s1, List<List<Item>> s2)
+    {
+        List<Item> last_itemset = s2.get(s2.size() - 1);
+        Item last_item = last_itemset.get(last_itemset.size() - 1);
+        last_itemset = new ArrayList<Item>();
+        last_itemset.add(last_item);
+        s1.add(last_itemset);
+        return s1;
+    }
+
     // Join 2 sequences with min minsup in last position
-    public Sequence(Sequence a, Sequence b, boolean append_itemset, boolean reverse){//Constructor for Reverse join
+    public Sequence(Sequence a, Sequence b, boolean prepend_itemset, boolean reverse){//Constructor for Reverse join
         this.sequence = deep_copy(b);
         Item i = a.sequence.get(0).get(0);
         this.size = b.get_Size();
         this.length=b.getLength()+1;
         this.count = 0;
 
-        if (append_itemset){//Adds it at the beginning, its own separate list--> first set!!
+        if (prepend_itemset){//Adds it at the beginning, its own separate list--> first set!!
             this.size++;
             List <Item> temp = new ArrayList<Item>() ;
             temp.add(i);
@@ -150,12 +157,12 @@ public class Sequence implements Comparable<Sequence>{
         {
             a = this.without_n(1);
         }
-        else if(other.unique_minsup_in_last())
+        else if(other.unique_minsup_in_last() && !other.unique_minsup_in_first())
         {
             b = this.without_n(other.getLength() - 2);
         }
 
-        return a.equals(b);
+        return a.toString().equals(b.toString());
     }
 
     private static List<List<Item>> deep_copy(Sequence a)
@@ -203,6 +210,7 @@ public class Sequence implements Comparable<Sequence>{
 
         List<Item> last_set = null;
         Item last_item = null;
+
         for(List<Item> set : l) {
             for (Item i : set) {
                 if (count == n)

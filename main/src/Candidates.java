@@ -61,23 +61,24 @@ class Candidates {
                 List<Sequence> sequences = new ArrayList<>();
                 Boolean unique_minsup_in_first = sequence_1.unique_minsup_in_first();
                 Boolean unique_minsup_in_last = sequence_2.unique_minsup_in_last();
-                Boolean length_two_edge_case = sequence_1.getLength() == sequence_2.getLength() &&
-                        sequence_1.get_Size() == sequence_2.get_Size() &&
-                        sequence_1.getLength() == 2 &&
-                        sequence_1.get_Size() == 2;
 
                 if( unique_minsup_in_first && !unique_minsup_in_last )
                 {
-                    sequences.add(new Sequence(sequence_1, sequence_2, FALSE));
-                    if(length_two_edge_case)
+                    Boolean last_item_singleton = sequence_2.sequence.get(sequence_2.sequence.size() -1).size() == 1;
+
+                    sequences.add(new Sequence(sequence_1, sequence_2, last_item_singleton));
+
+                    if(sequence_1.get_Size() == 2 && sequence_1.getLength() == 2 )
                     {
-                        sequences.add(new Sequence(sequence_1, sequence_2, TRUE));
+                        sequences.add(new Sequence(sequence_1, sequence_2, FALSE));
                     }
                 }
-                else if( unique_minsup_in_last )
+                else if( unique_minsup_in_last && !unique_minsup_in_first)
                 {
-                    sequences.add(new Sequence(sequence_1, sequence_2, FALSE, TRUE));
-                    if(length_two_edge_case)
+                    boolean first_item_singleton = sequence_1.sequence.get(0).size() == 1;
+                    sequences.add(new Sequence(sequence_1, sequence_2, first_item_singleton, TRUE));
+
+                    if(sequence_2.getLength() == 2 && sequence_2.get_Size() == 2)
                     {
                         sequences.add(new Sequence(sequence_1, sequence_2, FALSE, TRUE));
                     }
@@ -88,9 +89,9 @@ class Candidates {
                     sequences.add(new Sequence(sequence_1, sequence_2));
                 }
 
-//                StringBuilder sb = new StringBuilder();
-//                sequences.forEach( s -> sb.append(s.toString()));
-//                System.out.println(sequence_1.toString() + " + " + sequence_2.toString() + " = " + sb.toString());
+                StringBuilder sb = new StringBuilder();
+                sequences.forEach( s -> sb.append(s.toString()));
+                System.out.println(sequence_1.toString() + " + " + sequence_2.toString() + " = " + sb.toString());
 
                 for(Sequence s : sequences)
                 {
