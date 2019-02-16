@@ -143,10 +143,10 @@ public class Sequence implements Comparable<Sequence>{
         return a;
     }
 
-    public Boolean can_merge(Sequence other, double sdc) {
+    public Boolean can_merge(Sequence other, double sdc, Integer count) {
         List<List<Item>> a, b;
         // Check minimum support distance
-        if (!this.meets_sdc(other, sdc))
+        if (!this.meets_sdc(other, sdc, count))
             return FALSE;
 
         a = this.without_first();
@@ -434,10 +434,32 @@ public class Sequence implements Comparable<Sequence>{
     }
     private double get_maxsup() { return Collections.max(this.get_unique_items()).get_minsup(); }
 
-    public Boolean meets_sdc(Sequence other, double sdc)
+    private Integer get_max_actual_count()
     {
-        return ((Math.abs(other.get_maxsup() - this.get_minsup()) <= sdc) &&
-                (Math.abs(this.get_maxsup() - other.get_minsup()) <= sdc));
+        List<Integer> counts = new ArrayList<Integer>();
+        this.as_list_of_items().forEach( i -> counts.add(i.get_count()));
+        return Collections.max(counts);
+    }
+
+    private Integer get_min_actual_count()
+    {
+        List<Integer> counts = new ArrayList<Integer>();
+        this.as_list_of_items().forEach( i -> counts.add(i.get_count()));
+        return Collections.min(counts);
+    }
+
+    public Boolean meets_sdc(Sequence other, double sdc, Integer trans_count)
+    {
+        Integer a_max_count = this.get_max_actual_count();
+        Integer a_min_count = this.get_min_actual_count();
+        Integer b_max_count = other.get_max_actual_count();
+        Integer b_min_count = other.get_min_actual_count();
+
+        Double min_count = sdc * trans_count.doubleValue();
+
+
+        return ((Math.abs(a_max_count.doubleValue() - b_min_count.doubleValue()) <= min_count) &&
+                (Math.abs(b_max_count.doubleValue() - a_min_count.doubleValue()) <= min_count));
     }
 
     public Boolean meets_minimum_support(int total_records)

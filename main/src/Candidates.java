@@ -39,16 +39,18 @@ class Candidates {
         {
             this.candidates = generate_length_two_sequences(previous_round.candidates,
                                                             previous_round.support_distance_contraint,
-                                                            i);
+                                                            i,
+                                                            transaction_count);
         }
         else{
             this.candidates = generate_sequences(   previous_round.candidates,
-                                                    support_distance_contraint);
+                                                    support_distance_contraint,
+                                                    transaction_count);
         }
         //this.candidates.sort(null);
     }
 
-    private static List<Sequence> generate_sequences(List<Sequence> prev_seq, double sdc){
+    private static List<Sequence> generate_sequences(List<Sequence> prev_seq, double sdc, Integer transaction_count){
 
         List<Sequence> accumulate_sequences = new ArrayList<>();
         for(Sequence sequence_1 : prev_seq)
@@ -58,7 +60,7 @@ class Candidates {
 
                // System.out.println("New One"+" "+sequence_1.toString()  + sequence_2.toString());
 
-                if(!sequence_1.can_merge(sequence_2, sdc)){
+                if(!sequence_1.can_merge(sequence_2, sdc, transaction_count)){
                     //System.out.println("Continued!!");
                     continue;
                 }
@@ -123,13 +125,14 @@ class Candidates {
 
     private static List<Sequence> generate_length_two_sequences(List<Sequence> length_one_sequences,
                                                                 Double sdc,
-                                                                Items i){
+                                                                Items i,
+                                                                Integer transaction_count){
         List<Sequence> l2_sequences = new ArrayList<>();
 
         for(Sequence first : length_one_sequences){
             for(Sequence second : length_one_sequences){
 
-                if( !first.meets_sdc(second, sdc) )
+                if( !first.meets_sdc(second, sdc, transaction_count) )
                     continue;
 
                 List<Sequence> list = new ArrayList<>();
@@ -159,7 +162,6 @@ class Candidates {
         {
             for (Sequence temp: prev_list){
                 if(seq.toString().compareTo(temp.toString())==0){
-                    System.out.println("found it!!! in prevseq"+" "+seq.toString()+" "+temp.toString());
                     return FALSE;
                 }
             }
