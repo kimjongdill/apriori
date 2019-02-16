@@ -1,4 +1,4 @@
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,23 +29,12 @@ public class Main {
         return t;
     }
 
-    private static String format_output(List<Sequence> t)
-    {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Number of length ")
-                .append(t.get(0).getLength())
-                .append(" Sequences: ")
-                .append(t.size())
-                .append("\n");
-        t.forEach( e -> sb.append(e.toString()).append("\n"));
-        return sb.toString();
-    }
-
-    public static void main(String args[]) {
+    public static void main(String args[]) throws IOException{
         String sequence_file = null;
         String parameter_file = null;
         File sequences;
         File parameters;
+        PrintWriter writer;
 
         // Parse command line arguments for file names
         for (int i = 0; i < args.length; i++) {
@@ -64,6 +53,8 @@ public class Main {
         // Attempt to open files
         sequences = new File(sequence_file);
         parameters = new File(parameter_file);
+
+        writer = new PrintWriter(new FileWriter("output.txt"));
         check_file(sequences);
         check_file(parameters);
 
@@ -84,10 +75,10 @@ public class Main {
         }
         current_candidates.trim_infrequent();
         previous_candidates.trim_infrequent();
-        System.out.println("Number of Length 1 Frequency Sentences: " + previous_candidates.size());
-        System.out.println(previous_candidates.toString());
-        System.out.println("Number of Length 2 Frequency Sentences: " + current_candidates.size());
-        System.out.println(current_candidates.toString());
+        writer.println("Number of Length 1 Frequency Sentences: " + previous_candidates.size());
+        writer.println(previous_candidates.toString());
+        writer.println("Number of Length 2 Frequency Sentences: " + current_candidates.size());
+        writer.println(current_candidates.toString());
 
         previous_candidates = current_candidates;
 
@@ -101,13 +92,16 @@ public class Main {
             }
 
             current_candidates.trim_infrequent();
-            System.out.println("Number of Length " + length + " Frequency Sentences: " + current_candidates.size());
-            System.out.print(current_candidates.toString());
+            if(current_candidates.size() > 0) {
+                writer.println("Number of Length " + length + " Frequency Sentences: " + current_candidates.size());
+                writer.println(current_candidates.toString());
+            }
 
             length++;
             previous_candidates = current_candidates;
         }
 
+        writer.close();
     }
 
 }
