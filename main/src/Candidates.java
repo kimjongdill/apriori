@@ -156,19 +156,19 @@ class Candidates {
         if(!s.is_valid_sequence())
             return TRUE;
 
-        // Check all valid subsequences are frequent
-        List<Sequence> l = s.get_all_subsequences_with_min_minsup();
-        for( Sequence seq : l )
-        {
-            for (Sequence temp: prev_list){
-                if(seq.toString().compareTo(temp.toString())==0){
-                    return FALSE;
-                }
-            }
-
-
-        }
-        System.out.println("Never found it");
+//        // Check all valid subsequences are frequent
+//        List<Sequence> l = s.get_all_subsequences_with_min_minsup();
+//        for( Sequence seq : l )
+//        {
+//            for (Sequence temp: prev_list){
+//                if(seq.toString().compareTo(temp.toString())==0){
+//                    return FALSE;
+//                }
+//            }
+//
+//
+//        }
+//        System.out.println("Never found it");
         return FALSE;
     }
 

@@ -20,6 +20,8 @@ class Sequences {
         Sequence t;
         while((s = p.get_next_line()) != null)
         {
+            if(s.length() < 4)
+                continue;
             transaction_count++;
             t = new Sequence(s, items);
             t.get_unique_items().forEach( i -> i.incr_count());
@@ -29,12 +31,17 @@ class Sequences {
 
     public Sequence get_next()
     {
-        String line = p.get_next_line();
+        while(true) {
+            String line = p.get_next_line();
 
-        if(line == null)
-            return null;
+            if (line == null)
+                return null;
 
-        return new Sequence(line, items);
+            if (line.length() < 4)
+                continue;
+
+            return new Sequence(line, items);
+        }
     }
 
     public int get_transaction_count()

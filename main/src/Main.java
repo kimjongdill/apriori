@@ -14,20 +14,7 @@ public class Main {
         }
         return;
     }
-
-    private static List<Sequence> initial_frequent_itemset(Items i, Integer n)
-    {
-        List<Item> l = i.toList();
-        List<Sequence> t = new ArrayList<>();
-        for(Item item : l)
-        {
-            Double support = item.get_count().doubleValue() / n.doubleValue();
-            if(support > item.get_minsup())
-                t.add(new Sequence(new String("<{" + item.get_name() + "}>"), i));
-        }
-
-        return t;
-    }
+    
 
     public static void main(String args[]) throws IOException{
         String sequence_file = null;
