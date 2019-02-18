@@ -458,8 +458,8 @@ public class Sequence implements Comparable<Sequence>{
         Double min_count = sdc * trans_count.doubleValue();
 
 
-        return ((Math.abs(a_max_count.doubleValue() - b_min_count.doubleValue()) <= min_count) &&
-                (Math.abs(b_max_count.doubleValue() - a_min_count.doubleValue()) <= min_count));
+        return ((Math.abs(a_max_count.doubleValue() - b_min_count.doubleValue()) >= min_count) &&
+                (Math.abs(b_max_count.doubleValue() - a_min_count.doubleValue()) >= min_count));
     }
 
     public Boolean meets_minimum_support(int total_records)
