@@ -327,7 +327,8 @@ public class Sequence implements Comparable<Sequence>{
             }
             sb.append("}");
         }
-        sb.append(">");
+        sb.append("> Count: ");
+        sb.append(this.count.toString());
         return sb.toString();
     }
 
